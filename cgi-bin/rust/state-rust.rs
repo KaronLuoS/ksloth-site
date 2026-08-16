@@ -25,7 +25,7 @@ fn main() {
     let mut set_cookie_header = String::new();
 
     if sid.is_none() && qs.contains("action=save") {
-        // Create a unique ID using the current time and process ID
+        // Create a unique ID using the current time and process ID credit from gemini ;)
         let time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_micros();
         let pid = process::id();
         let generated_sid = format!("{}_{}", time, pid);
@@ -39,15 +39,15 @@ fn main() {
         set_cookie_header = String::from("Set-Cookie: session_id=; Path=/; Max-Age=0;");
     }
 
-    // 3. Print HTTP Headers
+
     println!("Cache-Control: no-cache");
     println!("Content-Type: text/html");
     if !set_cookie_header.is_empty() {
         println!("{}", set_cookie_header);
     }
-    println!(); // Mandatory blank line to separate headers from the body
+    println!(); 
 
-    // 4. HTML Boilerplate and Navigation
+
     println!("<html><head><title>Rust State Demo</title></head><body style=\"font-family: sans-serif; padding: 20px;\">");
     println!("<h2>Rust Server-Side State Demo</h2>");
     println!("<nav>");
@@ -56,10 +56,10 @@ fn main() {
     println!("  <a href=\"?action=clear\">3. Clear Session</a>");
     println!("</nav><hr>");
 
-    // 5. Routing Logic (The "Screens")
+
     
     if qs.contains("action=save") {
-        // SCREEN 1: Handle form submission and save to file
+        // Handle form submission and save to file
         let mut body = String::new();
         io::stdin().read_to_string(&mut body).unwrap_or_default();
         
@@ -75,7 +75,7 @@ fn main() {
         }
 
     } else if qs.contains("action=view") {
-        // SCREEN 2: Read from the server file
+        // Read from the server file
         if let Some(id) = &sid {
             let filepath = format!("/tmp/rust_sess_{}.txt", id);
             // Attempt to read the physical file
@@ -90,7 +90,7 @@ fn main() {
         }
 
     } else if qs.contains("action=clear") {
-        // SCREEN 3: Destroy the session
+        //  Destroy the session
         if let Some(id) = &sid {
             let filepath = format!("/tmp/rust_sess_{}.txt", id);
             // Delete the file from the server
@@ -99,7 +99,7 @@ fn main() {
         println!("<p>Session cleared and server data file deleted.</p>");
 
     } else {
-        // DEFAULT SCREEN: The Input Form
+        // DEFAULT: The Input Form
         println!(r#"
         <form method="POST" action="?action=save">
             <label><strong>Enter some text to save on the server:</strong></label><br><br>
