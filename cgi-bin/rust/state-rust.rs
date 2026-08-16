@@ -96,7 +96,7 @@ fn main() {
             // Delete the file from the server
             let _ = fs::remove_file(filepath);
         }
-        println!("<p>🗑️ Session cleared and server data file deleted.</p>");
+        println!("<p>Session cleared and server data file deleted.</p>");
 
     } else {
         // DEFAULT SCREEN: The Input Form
