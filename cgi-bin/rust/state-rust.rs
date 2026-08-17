@@ -53,7 +53,7 @@ fn main() {
     println!("<nav>");
     println!("  <a href=\"?\">1. Enter Data</a> | ");
     println!("  <a href=\"?action=view\">2. View Saved Data</a> | ");
-    println!("  <a href=\"?action=clear\">3. Clear Session</a>");
+    println!("  <a href=\"?action=clear\">3. Clear Session</a> | ");
     println!("  <a href=\"../../html/index.html \">home</a>");
     println!("</nav><hr>");
 

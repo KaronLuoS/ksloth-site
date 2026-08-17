@@ -40,7 +40,6 @@ print("    <h2>=== Received Data ===</h2>")
 if not payload:
     print("    <p>(No data received)</p>")
 else:
-    # <pre> preserves line breaks and spacing from the raw payload
     print(f"    <pre style='background: #f0f0f0; padding: 10px;'>{payload}</pre>")
 
 print("""</body>
