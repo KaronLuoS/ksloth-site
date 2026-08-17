@@ -72,7 +72,7 @@ int main() {
         <a href="?">1. Enter Data</a> | 
         <a href="?action=view">2. View Saved Data</a> | 
         <a href="?action=clear">3. Clear Session</a> | 
-        <a href="../../html/index.html">home</a>
+        <a href="/">home</a>
         </nav><hr>
         )";
 
