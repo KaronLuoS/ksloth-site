@@ -16,7 +16,7 @@ fn main(){
     println!(r#"{{
         "title": "Hello, there!",
         "heading": "Hello, rust!",
-        "message": "This page was generated with the Perl programming language and Karon downloaded the code ;)",
+        "message": "This page was generated with the Rust programming language and Karon wrote the code ;)",
         "time": {}, 
         "IP": {}
     }}"#, date, address);
