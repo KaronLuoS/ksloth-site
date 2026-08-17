@@ -12,7 +12,7 @@ def get_session_id():
             return value
     return None
 
-qs = os.environ.get("QEURY_STRING","")
+qs = os.environ.get("QUERY_STRING","")
 
 sid = get_session_id()
 set_cookie_header = ""
