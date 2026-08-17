@@ -55,7 +55,7 @@ if "action=save" in qs:
             file.write(parsed_data)
 
         print("<p>Data successfully saved to the server!</p>")
-        print('''<p><a href="?action=view">Click here to view it on the next screen.</a></p>''')
+        print('<p><a href="?action=view">Click here to view it on the next screen.</a></p>')
 
 elif "action=view" in qs:
     if sid is not None:
