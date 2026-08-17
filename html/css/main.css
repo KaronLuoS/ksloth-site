@@ -13,6 +13,10 @@
 
 }
 
+body{
+    background-color:rgb(245, 242, 242);
+}
+
 hgroup {
     text-align: center;
 }
