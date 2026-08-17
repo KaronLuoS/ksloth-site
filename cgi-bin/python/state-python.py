@@ -41,6 +41,7 @@ print(f"<nav>")
 print(f"  <a href=\"?\">1. Enter Data</a> | ")
 print(f"  <a href=\"?action=view\">2. View Saved Data</a> | ")
 print(f"  <a href=\"?action=clear\">3. Clear Session</a>")
+print(f"  <a href=\"../../html/index.html\">home</a>")
 print(f"</nav><hr>")
 
 if "action=save" in qs:
