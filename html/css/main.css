@@ -1,0 +1,65 @@
+/* Homework 2 */
+:root{
+    /* --first-color:#f9ecec; 
+    --second-color: #f0d9da; 
+    --third-color:#c8d9eb; 
+    --fourth-color: #ecf2f9; */
+    --first-color: #f7c7c7;
+    --second-color: #f7e3c9;
+    --third-color: #f8facf;
+    --fourth-color: #e4efd1;
+    --fifth-color: #c8f4f8;
+    --sixth-color: #d2cbfb;
+
+}
+
+hgroup {
+    text-align: center;
+}
+
+section{
+    padding: 0;
+    margin: 0;
+}
+
+#team{
+    padding: 2rem 1rem;
+    background-color: var(--first-color); 
+}
+
+#homework1{
+    padding: 2rem 1rem;
+    background-color: var(--second-color); 
+}
+#homework2 {
+    padding: 2rem 1rem;
+    background-color: var(--third-color); 
+    ul{
+        list-style: none;
+        padding: 0; 
+          
+    }
+
+    > ul {
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    }
+
+}
+#homework3 {
+    padding: 2rem 1rem;
+    background-color: var(--fourth-color); 
+
+}
+
+details > form label,
+form input {
+    display: block;
+    margin-bottom: 5px;
+}
+
+form button {
+    display: block;
+    margin-top: 10px;
+}

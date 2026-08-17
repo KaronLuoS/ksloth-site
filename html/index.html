@@ -11,19 +11,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" href="./asset/favicon.png" type="image/png">
 <title>CSE 135 HW Lives!</title>
+<link rel="stylesheet" href="./css/main.css">
 
 </head>
 
 <body>
-<h1>CSE 135</h1>
-<h2>Summer 2026</h2>
-<section>
+<hgroup>
+    <h1>CSE 135</h1>
+    <h2>Summer 2026</h2>
+</hgroup>
+<section id="team">
 <h2>Team member</h2>
 <ul>
 <li><a href="./private/karon_page.html">Kailan Luo</a></li>
 </ul>
 </section>
-<section>
+<section id="homework1">
 <h2>Homework 1</h2>
 <ul>
     <li><a href="./hw1/hello.php">hello.php</a></li>
@@ -31,7 +34,7 @@
 </ul>
 </section>
 
-<section>
+<section id="homework2">
 <h2>Homework 2</h2>
         <ul>
             <li>Perl
@@ -51,15 +54,18 @@
                 <li><a href="../cgi-bin/rust/hello-json-rust">Hello, Rust! (JSON)</a></li>
                 <li><a href="../cgi-bin/rust/ environment-rust">Rust Environment Variables </a></li>
                 <li><a href="../cgi-bin/rust/echo-rust">Echo Rust</a>
-                    <form method="POST" action="../cgi-bin/rust/echo-rust">
-                        <label>Name:</label>
-                        <input type="text" name="name">
+                     <details>
+                        <summary>Post Form</summary>
+                        <form method="POST" action="../cgi-bin/rust/echo-rust">
+                            <label>Name:</label>
+                            <input type="text" name="name">
 
-                        <label>Message:</label>
-                        <input type="text" name="message">
+                            <label>Message:</label>
+                            <input type="text" name="message">
 
-                        <button type="submit">Send</button>
-                    </form>
+                            <button type="submit">Send</button>
+                        </form>
+                    </details>
                 </li>
                 <li><a href="../cgi-bin/rust/state-rust"> Rust State</a></li>
                 </ul>
@@ -70,15 +76,18 @@
                 <li><a href="../cgi-bin/python/hello-json-python.py">Hello, Python! (JSON)</a></li>
                 <li><a href="../cgi-bin/python/environment-python.py">Python Environment Variables </a></li>
                 <li><a href="../cgi-bin/python/echo-python.py">Echo Python</a>
-                    <form method="POST" action="../cgi-bin/python/echo-python.py">
-                        <label>Name:</label>
-                        <input type="text" name="name">
+                    <details>
+                        <summary>Post Form</summary>
+                        <form method="POST" action="../cgi-bin/python/echo-python.py">
+                            <label>Name:</label>
+                            <input type="text" name="name">
 
-                        <label>Message:</label>
-                        <input type="text" name="message">
+                            <label>Message:</label>
+                            <input type="text" name="message">
 
-                        <button type="submit">Send</button>
-                    </form>
+                            <button type="submit">Send</button>
+                        </form>
+                    </details>
                 </li>
                 <li><a href="../cgi-bin/python/state-python.py"> Python State</a></li>
                 </ul>
@@ -89,25 +98,26 @@
                 <li><a href="../cgi-bin/cpp/hello-json-cpp.cgi">Hello, C++! (JSON)</a></li>
                 <li><a href="../cgi-bin/cpp/environment-cpp.cgi">C++ Environment Variables </a></li>
                 <li><a href="../cgi-bin/cpp/echo-cpp.cgi">Echo C++</a>
-                    <form method="POST" action="../cgi-bin/cpp/echo-cpp.cgi">
-                        <label>Name:</label>
-                        <input type="text" name="name">
+                    <details>
+                        <summary>Post Form</summary>
+                        <form method="POST" action="../cgi-bin/cpp/echo-cpp.cgi">
+                            <label>Name:</label>
+                            <input type="text" name="name">
 
-                        <label>Message:</label>
-                        <input type="text" name="message">
+                            <label>Message:</label>
+                            <input type="text" name="message">
 
-                        <button type="submit">Send</button>
-                    </form>
+                            <button type="submit">Send</button>
+                        </form>
+                    </details>
                 </li>
                 <li><a href="../cgi-bin/cpp/state-cpp.cgi"> C++ State</a></li>
                 </ul>
             </li>
         </ul>
-
-        </details>
 </section>
 
-<section>
+<section id="homework3">
 <h2>Homework 3</h2>
 </section>
 
