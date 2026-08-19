@@ -92,7 +92,7 @@ if "action=" not in qs:
                             box.style.background = '#e6ffed';
                             box.style.borderColor = '#b7eb8f';
                             box.innerHTML = `<h4> Session Restored via Fingerprint!</h4>
-                                            <p>No cookie was found, but your device fingerprint matched an existing session.</p>
+                                            <p>No cookie was found, but fingerprint matched an existing session.</p>
                                             <p>Saved Data:${data.saved_data}</p>`;
                         } else if (data.status === 'active') {
                             box.style.background = '#eef7ff';
