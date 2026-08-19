@@ -41,7 +41,7 @@ if "action=" not in qs:
     </head>
     <body style="font-family: sans-serif; padding: 20px; max-width: 600px;">
         <h2>Fingerprint State Demo</h2>
-        <p>Your Unique Device Hash: <strong id="fp-display" style="color: blue;">Calculating...</strong></p>
+        <p>Your Unique Device Hash: <em id="fp-display" style="color: blue;">Calculating...</em></p>
         
         <status-box id="status-box" style="padding: 15px; background: #eee; margin-bottom: 20px; border-radius: 5px;">
             Checking session...
@@ -50,8 +50,8 @@ if "action=" not in qs:
         <input type="text" id="user-data" placeholder="Enter data to save" style="padding: 5px; width: 250px;">
         <button onclick="saveData()" style="padding: 5px 10px;">Save Data</button>
         <hr>
-        <button onclick="clearCookies()" style="padding: 5px 10px; color: red;">1. Clear Cookies (Simulate Loss)</button>
-        <button onclick="location.reload()" style="padding: 5px 10px;">2. Refresh Page</button>
+        <button onclick="clearCookies()" style="padding: 5px 10px; color: red;">Clear Cookies</button>
+        <button onclick="location.reload()" style="padding: 5px 10px;">Refresh Page</button>
 
         <script>
             let fpId = "";
@@ -74,9 +74,9 @@ if "action=" not in qs:
                     .then(data => {
                         let box = document.getElementById('status-box');
                         if (data.status === 'restored') {
-                            box.innerHTML = `<h3 style="color: green; margin-top:0;">Session Restored via Fingerprint!</h3><p>We noticed you cleared your cookies, but we recognized your device.</p><strong>Saved Data:</strong> ${data.saved_data}`;
+                            box.innerHTML = `<h3 style="color: green; margin-top:0;">Session Restored via Fingerprint!</h3><p>We noticed you cleared your cookies, but we recognized your device.</p><em>Saved Data:</em> ${data.saved_data}`;
                         } else if (data.status === 'active') {
-                            box.innerHTML = `<h3 style="margin-top:0;">Active Session (Cookie Found)</h3><strong>Saved Data:</strong> ${data.saved_data}`;
+                            box.innerHTML = `<h3 style="margin-top:0;">Active Session (Cookie Found)</h3><em>Saved Data:</em> ${data.saved_data}`;
                         } else {
                             box.innerHTML = `<h3 style="margin-top:0;">New Session</h3>No data saved yet.`;
                         }
