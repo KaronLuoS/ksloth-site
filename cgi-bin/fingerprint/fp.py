@@ -43,7 +43,7 @@ if "action=" not in qs:
         <h2>Fingerprint State Demo</h2>
         <p>Your Unique Device Hash: <strong id="fp-display" style="color: blue;">Calculating...</strong></p>
         
-        <status-box style="padding: 15px; background: #eee; margin-bottom: 20px; border-radius: 5px;">
+        <status-box id="status-box" style="padding: 15px; background: #eee; margin-bottom: 20px; border-radius: 5px;">
             Checking session...
         </status-box>
 
