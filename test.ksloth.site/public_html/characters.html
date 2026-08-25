@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Character biographies for Batman: The Animated Series.">
+    <title>Characters - Batman: The Animated Series</title>
+    <link rel="stylesheet" href="./style/global.css">
+    <style>
+        /* Base styles consistent with the rest of the site */
+       
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* Grid layout for character cards */
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Styling for our custom semantic tag */
+        character-card {
+            display: block; /* Custom tags default to inline, so we must set to block */
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        character-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+            font-size: 1.4rem;
+        }
+        character-card .alter-ego {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        character-card p {
+            font-size: 0.95rem;
+        }
+        .meta-info {
+            list-style: none;
+            padding: 0;
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        .meta-info li {
+            margin-bottom: 0.25rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Batman: The Animated Series</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="episodes.html">Episodes</a>
+        <a href="characters.html">Characters</a>
+    </nav>
+
+    <main>
+        <section aria-labelledby="heroes-title">
+            <h2 id="heroes-title">The Bat-Family</h2>
+            <div class="character-grid">
+                
+                <character-card>
+                    <h3>Batman</h3>
+                    <span class="alter-ego">Bruce Wayne</span>
+                    <p>Billionaire playboy by day, Gotham City's feared vigilante by night. After witnessing his parents' murder, Bruce traveled the world to master martial arts and detective skills, returning to wage a one-man war on crime.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Kevin Conroy</li>
+                    </ul>
+                </character-card>
+
+                <character-card>
+                    <h3>Robin</h3>
+                    <span class="alter-ego">Dick Grayson</span>
+                    <p>A former circus acrobat whose parents were murdered by mobster Tony Zucco. Bruce Wayne took him in as his ward, training him to become his crime-fighting partner. Known for his lighter attitude and agility.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Loren Lester</li>
+                    </ul>
+                </character-card>
+
+                <character-card>
+                    <h3>Batgirl</h3>
+                    <span class="alter-ego">Barbara Gordon</span>
+                    <p>The highly intelligent daughter of Commissioner James Gordon. She independently takes up the mantle of Batgirl, eventually earning Batman's trust and becoming a vital member of the team.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Melissa Gilbert</li>
+                    </ul>
+                </character-card>
+
+            </div>
+        </section>
+
+        <section aria-labelledby="villains-title">
+            <h2 id="villains-title">Rogues Gallery</h2>
+            <div class="character-grid">
+
+                <character-card>
+                    <h3>Poison Ivy &hearts;</h3>
+                    <span class="alter-ego">Dr. Pamela Isley</span>
+                    <p>A radical eco-terrorist and brilliant botanist who uses plant toxins and mind-controlling pheromones for her criminal activities. She values plant life over human life and often teams up with her best friend, Harley Quinn.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Diane Pershing</li>
+                    </ul>
+                </character-card>
+
+                <character-card>
+                    <h3>Catwoman</h3>
+                    <span class="alter-ego">Selina Kyle</span>
+                    <p>A world-class jewel thief and animal rights activist. She walks a fine line between villain and anti-hero, maintaining a complex, flirtatious, and adversarial relationship with Batman.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Adrienne Barbeau</li>
+                    </ul>
+                </character-card>
+
+                <character-card>
+                    <h3>Two-Face</h3>
+                    <span class="alter-ego">Harvey Dent</span>
+                    <p>Once Gotham's noble District Attorney and one of Bruce Wayne's closest friends. After a chemical explosion scarred half his face, his suppressed dark persona took over. He now makes life-or-death decisions based on the flip of a scarred coin.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Richard Moll</li>
+                    </ul>
+                </character-card>
+
+                <character-card>
+                    <h3>Bane</h3>
+                    <span class="alter-ego">Unknown</span>
+                    <p>A highly intelligent assassin originating from a brutal Cuban prison. He is enhanced by the super-steroid "Venom," which grants him immense physical strength. He was hired by Rupert Thorne to break the Batman.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Henry Silva</li>
+                    </ul>
+                </character-card>
+
+                <character-card>
+                    <h3>Clayface</h3>
+                    <span class="alter-ego">Matt Hagen</span>
+                    <p>A tragic figure who was once a popular actor. Addicted to an experimental cosmetic chemical to hide his facial disfigurement, corrupt businessman Roland Daggett attempted to kill him with an overdose. Instead, Hagen transformed into a massive, shapeshifting mud monster.</p>
+                    <ul class="meta-info">
+                        <li><strong>Voiced by:</strong> Ron Perlman</li>
+                    </ul>
+                </character-card>
+
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Batman: The Animated Series Fan Page.</p>
+    </footer>
+
+    <!-- Minimal JS to formally register the custom semantic element with the W3C DOM Standard -->
+    <script>
+        class CharacterCard extends HTMLElement {
+            constructor() {
+                super();
+            }
+        }
+        // Registering the custom element makes it fully valid HTML5
+        customElements.define('character-card', CharacterCard);
+    </script>
+</body>
+</html>

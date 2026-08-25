@@ -1,0 +1,84 @@
+      body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header, footer {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            text-align: center;
+            padding: 1.5rem 1rem;
+        }
+        nav {
+            display: flex;
+            background-color: #333;
+            text-align: center;
+            justify-content: space-around;
+            padding: 0.5rem;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        article {
+            background: #fff;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        aside {
+            background: #eef1f5;
+            padding: 1.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            float: right;
+            width: 250px;
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        aside h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+        dl {
+            margin: 0;
+        }
+        dt {
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        dd {
+            margin-left: 0;
+            margin-bottom: 0.5rem;
+        }
+        h1{
+            color: #fdff00;
+        }
+        h2, h3 {
+            color: #1a1a1a;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        /* Clearing float for article */
+        article::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
