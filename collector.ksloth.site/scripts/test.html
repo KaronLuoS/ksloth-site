@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 01 Test — Hello Beacon</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        h1 { color: #D35400; }
+        .instructions { background: #fdf0e6; border-left: 4px solid #D35400; padding: 15px; margin: 20px 0; }
+        #beacon-log { background: #1a1a2e; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 13px; min-height: 100px; white-space: pre-wrap; }
+        a { color: #D35400; }
+    </style>
+</head>
+<body>
+    <h1>Module 01: Hello Beacon Test</h1>
+
+    <div class="instructions">
+        <strong>Instructions:</strong>
+        <ol>
+            <li>Open your browser's DevTools (F12) &rarr; Network tab</li>
+            <li>This page loads <code>collector-v1.js</code> which fires a beacon on load</li>
+            <li>Check the Console tab to see the payload that was sent</li>
+            <li>Click the link below &mdash; a second beacon fires on page departure</li>
+        </ol>
+    </div>
+
+    <h2>Beacon Log</h2>
+    <div id="beacon-log">Waiting for beacons...</div>
+
+    <h2>Test Navigation</h2>
+    <p>Click this link to navigate away. The collector fires a departure beacon via <code>visibilitychange</code>:</p>
+    <p><a href="https://example.com">Navigate to example.com &rarr;</a></p>
+    <p><a href="index.html">Reload this page &rarr;</a></p>
+
+    <script>
+    // Intercept console.log to display beacon data on page
+    (function() {
+      const logEl = document.getElementById('beacon-log');
+      const origLog = console.log;
+      console.log = function(...args) {
+        origLog(...args);
+        const text = args.map((a) => {
+          return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+        }).join(' ');
+        if (text.indexOf('[Collector') !== -1) {
+          logEl.textContent += `${text}\n`;
+        }
+      };
+    })();
+    </script>
+    <script src="collector-v1.js"></script>
+</body>
+</html>
