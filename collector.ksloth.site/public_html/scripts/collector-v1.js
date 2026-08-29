@@ -2,7 +2,7 @@
 (function() {
   'use strict';
 
-  const endpoint = '/log.php';
+  const endpoint = './scripts/log.php';
 
   function sendBeacon() {
     const payload = {
