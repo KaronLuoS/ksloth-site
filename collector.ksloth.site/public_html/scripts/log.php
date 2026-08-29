@@ -22,7 +22,7 @@ if (is_array($allowedConfig)) {
     $originToSend = (string) $allowedConfig;
 }
 
-header('Access-Control-Allow-Origin: ' . $config['allowed_origin']);
+header('Access-Control-Allow-Origin: ' . $originToSend);
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
