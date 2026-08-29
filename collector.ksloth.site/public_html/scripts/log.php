@@ -11,6 +11,17 @@ $config = require dirname(__DIR__, 2) . '/database/config.php';;
 
 // ── CORS ──────────────────────────────────────────────────────────
 
+$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedConfig = $config['allowed_origin'];
+
+if (is_array($allowedConfig)) {
+    $originToSend = in_array($requestOrigin, $allowedConfig, true)
+        ? $requestOrigin
+        : $allowedConfig[0]; // fallback so the header is never missing/invalid
+} else {
+    $originToSend = (string) $allowedConfig;
+}
+
 header('Access-Control-Allow-Origin: ' . $config['allowed_origin']);
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
