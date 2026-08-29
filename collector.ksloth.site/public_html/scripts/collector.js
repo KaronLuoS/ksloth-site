@@ -15,7 +15,7 @@ const collector = (function () {
   // ── Default Configuration ─────────────────────────────────────────
 
   const defaults = {
-    endpoint: 'https://collector.ksloth.scripts/log.php',
+    endpoint: 'https://collector.ksloth.site/scripts/log.php',
     enableTechnographics: true,
     enableTiming: true,
     enableErrors: true,
@@ -250,7 +250,7 @@ const collector = (function () {
       navigator.sendBeacon(config.endpoint, blob);
       log('Beacon sent via sendBeacon');
     } else {
-      fetch(ENDPOINT, {
+      fetch(config.endpoint, {
         method: 'POST',
         body: blob,
         keepalive: true
@@ -287,13 +287,8 @@ const collector = (function () {
     log(`Error #${errorCount}:`, errorData.type, '-', errorData.message);
 
     // Send error beacon
-    const payload = {
-      type: 'error',
-      error: errorData,
-      timestamp: new Date().toISOString(),
-      url: window.location.href,
-      session: getSessionId()
-    };
+    const payload = buildPayload('error');
+    payload.error = errorData;
 
     send(payload);
 
@@ -373,13 +368,8 @@ const collector = (function () {
    * Standardizes the payload structure and dispatches custom events for testing.
    */
   function reportActivity(activityData) {
-    const payload = {
-      type: 'activity',
-      activity: activityData,
-      timestamp: new Date().toISOString(),
-      url: window.location.href,
-      session: getSessionId()
-    };
+    const payload = buildPayload('activity');
+    payload.activity = activityData;
 
     send(payload);
 
