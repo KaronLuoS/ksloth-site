@@ -13,11 +13,8 @@
 
 declare(strict_types=1);
 
-// TEMPORARY DEBUG — remove these two lines once the 500 is fixed.
-// Never leave error display on in production; it can leak file paths
-// and other server details to anyone who hits this endpoint.
-ini_set('display_errors', '1');
-error_reporting(E_ALL);
+// ini_set('display_errors', '1');
+// error_reporting(E_ALL);
 
 $config = require dirname(__DIR__, 2) . '/database/config.php';
 
