@@ -80,6 +80,7 @@ CREATE TABLE IF NOT EXISTS performance (
     dom_content_loaded  FLOAT,
     dom_complete        FLOAT,
     load_time           FLOAT,
+    server_timestamp    DATETIME NOT NULL,
     created_at          DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     INDEX idx_session   (session_id),
