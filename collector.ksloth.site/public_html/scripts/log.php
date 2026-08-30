@@ -3,16 +3,39 @@
  * log.php
  * Receives beacon payloads from collector.js and routes them into:
  * sessions, pageviews, events, errors, performance.
+ *
+ * Session model: one `sessions` row per session_id (session_id is the
+ * PRIMARY KEY, upserted in place) — NOT gap-based. If you later want to
+ * track the same visitor across multiple sessions, that's a separate
+ * user_id concept (e.g. populated via collector.identify()), not
+ * something this table does today.
  */
 
 declare(strict_types=1);
 
+// TEMPORARY DEBUG — remove these two lines once the 500 is fixed.
+// Never leave error display on in production; it can leak file paths
+// and other server details to anyone who hits this endpoint.
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
 $config = require dirname(__DIR__, 2) . '/database/config.php';
 
+// Not every host has the mbstring extension enabled. Prefer mb_substr
+// (correct for multi-byte/UTF-8 text) when available, otherwise fall
+// back to plain substr() so the script doesn't fatal-error either way.
+function safe_substr(string $str, int $length): string
+{
+    return function_exists('mb_substr')
+        ? mb_substr($str, 0, $length)
+        : substr($str, 0, $length);
+}
+
 // ── CORS ──────────────────────────────────────────────────────────
+// allowed_origin in config.php can be a single string OR an array of
+// allowed origins. Whichever it is, resolve it to exactly one string
+// before sending the header — concatenating an array directly produces
+// the literal string "Array", which browsers reject as invalid.
 
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedConfig = $config['allowed_origin'];
@@ -180,6 +203,9 @@ try {
     // ── 2. Route into the type-specific table ────────────────────
 
     if ($type === 'pageview') {
+        // Return explicit 0/1/null instead of PHP true/false — PDO can
+        // silently stringify bound `false` to '' instead of 0, which
+        // MySQL's strict mode then rejects for a BOOLEAN/TINYINT column.
         $toBool = static function ($v) {
             if ($v === null) return null;
             return ((bool) $v) ? 1 : 0;
