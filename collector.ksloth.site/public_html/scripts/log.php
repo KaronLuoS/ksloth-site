@@ -23,6 +23,7 @@ if (is_array($allowedConfig)) {
 }
 
 header('Access-Control-Allow-Origin: ' . $originToSend);
+header('Access-Control-Allow-Credentials: true'); // required: sendBeacon() always sends credentials cross-origin
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
