@@ -135,7 +135,7 @@ const collector = (function () {
         log('Images blocked');
         maybeSendLateTechnographicUpdate();
       };
-      img.src = 'https://collector.ksloth.scripts/pixel.gif?_=' + Date.now();
+      img.src = 'https://collector.ksloth.site/scripts/pixel.gif';
     } catch (e) {
       imagesAllowedResult = false;
     }
