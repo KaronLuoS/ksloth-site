@@ -63,16 +63,16 @@ if (!is_array($payload)) {
 }
 
 $type      = isset($payload['type']) ? (string) $payload['type'] : 'unknown';
-$sessionId = isset($payload['session']) ? mb_substr((string) $payload['session'], 0, 36) : '';
-$url       = isset($payload['url']) ? mb_substr((string) $payload['url'], 0, 2048) : '';
-$referrer  = isset($payload['referrer']) ? mb_substr((string) $payload['referrer'], 0, 2048) : '';
+$sessionId = isset($payload['session']) ? safe_substr((string) $payload['session'], 36) : '';
+$url       = isset($payload['url']) ? safe_substr((string) $payload['url'], 2048) : '';
+$referrer  = isset($payload['referrer']) ? safe_substr((string) $payload['referrer'], 2048) : '';
 $clientTs  = isset($payload['timestamp']) ? (string) $payload['timestamp'] : null;
 $tech      = $payload['technographics'] ?? [];
 
 // Prefer the technographics-reported UA (client-side); fall back to the
 // request header (works even for beacon types that don't carry technographics).
-$headerUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? mb_substr($_SERVER['HTTP_USER_AGENT'], 0, 512) : null;
-$userAgent = isset($tech['userAgent']) ? mb_substr((string) $tech['userAgent'], 0, 512) : $headerUserAgent;
+$headerUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? safe_substr($_SERVER['HTTP_USER_AGENT'], 512) : null;
+$userAgent = isset($tech['userAgent']) ? safe_substr((string) $tech['userAgent'], 512) : $headerUserAgent;
 
 $ip = $_SERVER['REMOTE_ADDR'] ?? null;
 
@@ -181,7 +181,8 @@ try {
 
     if ($type === 'pageview') {
         $toBool = static function ($v) {
-            return $v === null ? null : (bool) $v;
+            if ($v === null) return null;
+            return ((bool) $v) ? 1 : 0;
         };
 
         $stmt = $pdo->prepare(
@@ -251,8 +252,8 @@ try {
         );
         $stmt->execute([
             ':session_id' => $sessionId,
-            ':message'    => $mapped['message'] !== null ? mb_substr((string) $mapped['message'], 0, 1024) : null,
-            ':source'     => $mapped['source'] !== null ? mb_substr((string) $mapped['source'], 0, 2048) : null,
+            ':message'    => $mapped['message'] !== null ? safe_substr((string) $mapped['message'], 1024) : null,
+            ':source'     => $mapped['source'] !== null ? safe_substr((string) $mapped['source'], 2048) : null,
             ':line'       => $mapped['line'],
             ':column'     => $mapped['column'],
             ':stack'      => $mapped['stack'],
@@ -272,7 +273,7 @@ try {
         );
         $stmt->execute([
             ':session_id' => $sessionId,
-            ':name'       => mb_substr($activityType, 0, 128),
+            ':name'       => safe_substr($activityType, 128),
             ':category'   => classifyEventType($activityType),
             ':data'       => json_encode($activity),
             ':url'        => $url,
@@ -303,7 +304,7 @@ try {
         );
         $stmt->execute([
             ':session_id' => $sessionId,
-            ':name'       => mb_substr($type, 0, 128),
+            ':name'       => safe_substr($type, 128),
             ':data'       => json_encode($payload['data'] ?? $payload),
             ':url'        => $url,
             ':server_ts'  => $nowSql,
