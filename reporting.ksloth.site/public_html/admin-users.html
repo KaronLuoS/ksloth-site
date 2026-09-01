@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Users</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    h1 { display: flex; justify-content: space-between; align-items: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; font-size: 0.9rem; }
+    th { background: #f4f4f9; }
+    input, select { padding: 0.3rem; font-size: 0.9rem; }
+    button { padding: 0.3rem 0.7rem; font-size: 0.85rem; cursor: pointer; margin-right: 0.25rem; }
+    .danger { color: #c0392b; }
+    #add-form { display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap; align-items: center; }
+    #add-form input, #add-form select { flex: 1; min-width: 120px; }
+    .error { color: #c0392b; margin-top: 0.5rem; font-size: 0.9rem; }
+    .hint { color: #666; font-size: 0.85rem; }
+    #denied { display: none; text-align: center; margin-top: 4rem; }
+  </style>
+</head>
+<body>
+  <div id="denied">
+    <h1>Access denied</h1>
+    <p>You need admin or owner access to view this page.</p>
+    <a href="/dashboard.php">Back to dashboard</a>
+  </div>
+
+  <div id="content" style="display:none;">
+    <h1>
+      Manage Users
+      <button id="logout-btn">Log out</button>
+    </h1>
+
+    <table id="users-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Display Name</th>
+          <th>Role</th>
+          <th>Created</th>
+          <th>Last Login</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users-body"></tbody>
+    </table>
+
+    <h2>Add New User</h2>
+    <form id="add-form">
+      <input type="email" id="new-email" placeholder="Email" required>
+      <input type="password" id="new-password" placeholder="Password (min 8 chars)" required minlength="8">
+      <input type="text" id="new-display-name" placeholder="Display name">
+      <select id="new-role">
+        <option value="viewer">viewer</option>
+        <option value="admin">admin</option>
+        <option value="owner">owner</option>
+      </select>
+      <button type="submit">Add User</button>
+    </form>
+    <div id="add-error" class="error" hidden></div>
+  </div>
+
+  <script src="/auth.js"></script>
+  <script>
+    const usersBody = document.getElementById('users-body');
+    const addForm = document.getElementById('add-form');
+    const addError = document.getElementById('add-error');
+
+    function fmtDate(str) {
+      if (!str) return '—';
+      return new Date(str).toLocaleString();
+    }
+
+    async function loadUsers() {
+      const res = await fetch('/api/users', { credentials: 'include' });
+      if (!res.ok) {
+        usersBody.innerHTML = `<tr><td colspan="6">Failed to load users.</td></tr>`;
+        return;
+      }
+      const users = await res.json();
+      renderUsers(users);
+    }
+
+    function renderUsers(users) {
+      usersBody.innerHTML = '';
+      for (const user of users) {
+        usersBody.appendChild(renderRow(user));
+      }
+    }
+
+    function renderRow(user) {
+      const tr = document.createElement('tr');
+      tr.dataset.id = user.id;
+      tr.innerHTML = `
+        <td>${escapeHtml(user.email)}</td>
+        <td class="display-name">${escapeHtml(user.display_name || '')}</td>
+        <td class="role">${escapeHtml(user.role)}</td>
+        <td>${fmtDate(user.created_at)}</td>
+        <td>${fmtDate(user.last_login)}</td>
+        <td class="actions">
+          <button class="edit-btn">Edit</button>
+          <button class="reset-btn">Reset Password</button>
+          <button class="delete-btn danger">Delete</button>
+        </td>
+      `;
+
+      tr.querySelector('.edit-btn').addEventListener('click', () => enterEditMode(tr, user));
+      tr.querySelector('.reset-btn').addEventListener('click', () => resetPassword(user.id));
+      tr.querySelector('.delete-btn').addEventListener('click', () => deleteUser(user.id, tr));
+
+      return tr;
+    }
+
+    function enterEditMode(tr, user) {
+      const nameCell = tr.querySelector('.display-name');
+      const roleCell = tr.querySelector('.role');
+      const actionsCell = tr.querySelector('.actions');
+
+      nameCell.innerHTML = `<input type="text" class="edit-name" value="${escapeHtml(user.display_name || '')}">`;
+      roleCell.innerHTML = `
+        <select class="edit-role">
+          <option value="viewer" ${user.role === 'viewer' ? 'selected' : ''}>viewer</option>
+          <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>admin</option>
+          <option value="owner" ${user.role === 'owner' ? 'selected' : ''}>owner</option>
+        </select>
+      `;
+      actionsCell.innerHTML = `
+        <button class="save-btn">Save</button>
+        <button class="cancel-btn">Cancel</button>
+      `;
+
+      actionsCell.querySelector('.save-btn').addEventListener('click', async () => {
+        const displayName = tr.querySelector('.edit-name').value;
+        const role = tr.querySelector('.edit-role').value;
+
+        const res = await fetch(`/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ displayName, role })
+        });
+
+        if (res.ok) {
+          loadUsers();
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Failed to update user');
+        }
+      });
+
+      actionsCell.querySelector('.cancel-btn').addEventListener('click', () => loadUsers());
+    }
+
+    async function resetPassword(id) {
+      const newPassword = prompt('Enter a new password (min 8 characters):');
+      if (!newPassword) return;
+      if (newPassword.length < 8) {
+        alert('Password must be at least 8 characters.');
+        return;
+      }
+
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password: newPassword })
+      });
+
+      if (res.ok) {
+        alert('Password updated.');
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to update password');
+      }
+    }
+
+    async function deleteUser(id, tr) {
+      if (!confirm('Delete this user? This cannot be undone.')) return;
+
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (res.ok) {
+        tr.remove();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete user');
+      }
+    }
+
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      addError.hidden = true;
+
+      const email = document.getElementById('new-email').value;
+      const password = document.getElementById('new-password').value;
+      const displayName = document.getElementById('new-display-name').value;
+      const role = document.getElementById('new-role').value;
+
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, displayName, role })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        addForm.reset();
+        loadUsers();
+      } else {
+        addError.textContent = data.error || 'Failed to add user';
+        addError.hidden = false;
+      }
+    });
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Gate the page by role. auth.js already redirects to /login.html
+    // if there's no session at all; this adds the admin/owner check
+    // on top of that for anyone who IS logged in but shouldn't see this page.
+    (async () => {
+      const res = await fetch('/api/me', { credentials: 'include' });
+      if (!res.ok) return; // auth.js's own checkAuth() will handle the redirect
+      const { data } = await res.json();
+
+      if (data.role !== 'owner' && data.role !== 'admin') {
+        document.getElementById('denied').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('content').style.display = 'block';
+      loadUsers();
+    })();
+  </script>
+</body>
+</html>

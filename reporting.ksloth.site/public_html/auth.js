@@ -1,10 +1,4 @@
 // Include this on every dashboard page:  <script src="/auth.js"></script>
-//
-// Reminder from the tutorial (worth keeping in mind): this redirect is
-// a CONVENIENCE, not the security boundary. The real protection is
-// /api/index.php returning 401 for any request without a valid
-// session — this script just gives logged-out users a clean redirect
-// instead of a broken page full of failed fetches.
 
 async function checkAuth() {
   try {
@@ -31,6 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   logoutBtn.addEventListener('click', async () => {
     await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-    window.location.href = '/login.html';
+    window.location.href = '/logged-out.html';
   });
 });
