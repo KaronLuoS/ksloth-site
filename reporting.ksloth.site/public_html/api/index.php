@@ -26,20 +26,22 @@ if ($resource === null) {
     exit;
 }
 
-// Auth endpoints are always reachable — you can't require a login to
-// reach the login endpoint.
+// Auth endpoints are always reachable 
 $authResources = ['login', 'logout', 'me'];
 if (in_array($resource, $authResources, true)) {
     require __DIR__ . "/routes/{$resource}.php";
     exit;
 }
 
-// Everything past this point is the real security boundary — this is
-// what actually blocks unauthenticated access, not any redirect logic
-// on the frontend.
+// Everything past this point is the real security boundary 
 if (empty($_SESSION['user'])) {
     http_response_code(401);
     echo json_encode(['error' => 'Not authenticated']);
+    exit;
+}
+
+if ($resource === 'users') {
+    require __DIR__ . '/routes/users.php';
     exit;
 }
 
