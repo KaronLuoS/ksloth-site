@@ -9,6 +9,8 @@ echo '<!DOCTYPE html>
 </head>
 <body>
     <h1>you reached dashboard.php</h1>
+    <button id="logout-btn">Log out</button>
+    <a href="/admin-users.html">admin</a>
 </body>
 </html>';
 ?>
