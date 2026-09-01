@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Reports</title>
+  <style>
+    body { display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; background: #f4f4f9; }
+    form { max-width: 400px; width: 100%; margin: 0 auto; padding: 2rem; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.25rem; font-size: 0.9rem; }
+    input { width: 100%; padding: 0.5rem; box-sizing: border-box; }
+    button { width: 100%; padding: 0.6rem; }
+    .error { color: #c0392b; margin-bottom: 1rem; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <form id="login-form">
+    <h1>Analytics Dashboard</h1>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password">
+    </div>
+    <div id="error-message" class="error" hidden></div>
+    <button type="submit">Sign In</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const errorDiv = document.getElementById('error-message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.hidden = true;
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // send/receive the session cookie
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          window.location.href = '/dashboard.php'; // adjust to your actual dashboard path
+        } else {
+          errorDiv.textContent = data.error || 'Login failed';
+          errorDiv.hidden = false;
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>

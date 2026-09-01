@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
-// ADJUST THIS PATH to wherever config.php actually lives relative to
-// this reporting vhost's document root — same issue we debugged for
-// the collector's log.php. Reuses the same config.php (DB creds +
-// allowed_origin) if it's shared across both vhosts; otherwise point
-// this at a copy scoped to the reporting vhost.
-$config = require dirname(__DIR__, 2) . '/database/config.php';
+$config = require dirname(__DIR__, 3) . 'collector.ksloth.site/database/config.php';
+
+// ── Session (must start before any output) ─────────────────────────
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_secure', '1');   // requires HTTPS — you have this
+ini_set('session.cookie_samesite', 'Lax'); // use 'None' instead if login page/dashboard end up on a different origin than /api
+session_start();
 
 // ── CORS ──────────────────────────────────────────────────────────
 $requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';

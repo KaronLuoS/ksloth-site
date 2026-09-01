@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . '/db.php'; // sets $pdo, CORS headers, getDateRange()
+require __DIR__ . '/db.php'; // sets $pdo, session_start(), CORS headers, getDateRange()
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -10,7 +10,6 @@ if ($method === 'OPTIONS') {
     exit;
 }
 
-// Parse the path into segments: /api/pageviews/5 -> ['pageviews', '5']
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $basePath = '/api';
 if (strpos($path, $basePath) === 0) {
@@ -27,6 +26,25 @@ if ($resource === null) {
     exit;
 }
 
+// Auth endpoints are always reachable — you can't require a login to
+// reach the login endpoint.
+$authResources = ['login', 'logout', 'me'];
+if (in_array($resource, $authResources, true)) {
+    require __DIR__ . "/routes/{$resource}.php";
+    exit;
+}
+
+// Everything past this point is the real security boundary — this is
+// what actually blocks unauthenticated access, not any redirect logic
+// on the frontend.
+if (empty($_SESSION['user'])) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Not authenticated']);
+    exit;
+}
+
+// "GET with no ID" on these four resource names returns the aggregate
+// report instead of raw rows (see earlier design note).
 $reportResources = ['pageviews', 'performance', 'errors', 'sessions'];
 
 if (in_array($resource, $reportResources, true) && $id === null) {
@@ -40,6 +58,4 @@ if (in_array($resource, $reportResources, true) && $id === null) {
     exit;
 }
 
-// Everything else (including GET/POST/PUT/DELETE with an ID on any
-// resource) goes through the generic table-driven CRUD handler.
 require __DIR__ . '/routes/crud.php';
