@@ -471,7 +471,7 @@ function route() {
     case '#/errors':
       errorsView();
       break;
-    case '#/admin':
+    case './admin-users.html':
       // Role check — UX only. The API enforces this for real.
       if (currentUser && currentUser.role !== 'owner' && currentUser.role !== 'admin') {
         window.location.hash = '#/overview';
