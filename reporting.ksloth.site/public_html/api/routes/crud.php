@@ -63,7 +63,6 @@ try {
                 }
                 echo json_encode($row);
             } else {
-                // Capped + paginated — these are logging tables, "all rows" is unbounded.
                 $limit = min((int) ($_GET['limit'] ?? 100), 500);
                 $offset = max((int) ($_GET['offset'] ?? 0), 0);
                 $stmt = $pdo->prepare("SELECT * FROM {$table} ORDER BY {$pk} DESC LIMIT ? OFFSET ?");

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard</title>
+  <link rel="stylesheet" href="./dashboard.css">
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="dashboard-header">
+      <button id="hamburger" class="hamburger" aria-label="Toggle menu">&#9776;</button>
+      <a href="#/overview" class="logo">Analytics Dashboard</a>
+      <div class="date-range">
+        <label>From <input type="date" id="date-start"></label>
+        <label>To <input type="date" id="date-end"></label>
+      </div>
+      <div class="user-controls">
+        <span id="user-name"></span>
+        <button id="logout-btn">Log out</button>
+      </div>
+    </header>
+
+    <nav class="dashboard-sidebar" id="sidebar">
+      <a href="#/overview">Overview</a>
+      <a href="#/performance">Performance</a>
+      <a href="#/errors">Errors</a>
+      <a href="#/admin" id="admin-link">Admin</a>
+    </nav>
+
+    <main class="dashboard-content" id="content">
+      <!-- Views are rendered here by dashboard.js -->
+    </main>
+
+    <footer class="dashboard-footer">
+      <small>Analytics Dashboard</small>
+    </footer>
+  </div>
+
+  <script src="/dashboard.js"></script>
+</body>
+</html>

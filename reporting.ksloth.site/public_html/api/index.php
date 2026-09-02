@@ -47,7 +47,7 @@ if ($resource === 'users') {
 
 // "GET with no ID" on these four resource names returns the aggregate
 // report instead of raw rows (see earlier design note).
-$reportResources = ['pageviews', 'performance', 'errors', 'sessions'];
+$reportResources = ['overview', 'pageviews', 'performance', 'errors', 'sessions'];
 
 if (in_array($resource, $reportResources, true) && $id === null) {
     if ($method !== 'GET') {

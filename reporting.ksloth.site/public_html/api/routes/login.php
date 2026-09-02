@@ -23,8 +23,7 @@ try {
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Same generic error whether the email doesn't exist or the
-    // password is wrong — don't let a client tell which one it was.
+
     if (!$user || !password_verify($password, $user['password_hash'])) {
         http_response_code(401);
         echo json_encode(['success' => false, 'error' => 'Invalid credentials']);

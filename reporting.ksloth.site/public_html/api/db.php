@@ -5,7 +5,7 @@ $config = require dirname(__DIR__, 3) . '/collector.ksloth.site/database/config.
 
 // ── Session (must start before any output) ─────────────────────────
 ini_set('session.cookie_httponly', '1');
-ini_set('session.cookie_secure', '1');   // requires HTTPS — you have this
+ini_set('session.cookie_secure', '1');  
 ini_set('session.cookie_samesite', 'Lax'); // use 'None' instead if login page/dashboard end up on a different origin than /api
 session_start();
 
