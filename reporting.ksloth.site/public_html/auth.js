@@ -8,7 +8,7 @@ async function checkAuth() {
       return null;
     }
     const data = await res.json();
-    return data.data; // { id, email, displayName, role, password_hash }
+    return data.data; // { id, email, displayName, role }
   } catch (err) {
     window.location.href = '/login.html';
     return null;

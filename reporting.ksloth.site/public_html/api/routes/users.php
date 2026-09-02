@@ -15,7 +15,7 @@ $validRoles = ['owner', 'admin', 'viewer'];
 switch ($method) {
     case 'GET':
         if ($id !== null) {
-            $stmt = $pdo->prepare('SELECT id, email, display_name, role, created_at, last_login FROM users WHERE id = ?');
+            $stmt = $pdo->prepare('SELECT id, email, display_name, role, password_hash, created_at, last_login FROM users WHERE id = ?');
             $stmt->execute([$id]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
@@ -25,7 +25,7 @@ switch ($method) {
             }
             echo json_encode($row);
         } else {
-            $stmt = $pdo->query('SELECT id, email, display_name, role, created_at, last_login FROM users ORDER BY id DESC');
+            $stmt = $pdo->query('SELECT id, email, display_name, role, password_hash, created_at, last_login FROM users ORDER BY id DESC');
             echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
         }
         break;
