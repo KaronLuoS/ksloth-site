@@ -51,7 +51,7 @@
         const data = await res.json();
 
         if (res.ok && data.success) {
-          window.location.href = '/dashboard.php'; // adjust to your actual dashboard path
+          window.location.href = '/dashboard.html'; // adjust to your actual dashboard path
         } else {
           errorDiv.textContent = data.error || 'Login failed';
           errorDiv.hidden = false;
