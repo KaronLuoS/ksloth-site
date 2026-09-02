@@ -33,18 +33,19 @@ try {
     // 2. Load time by page, split by browser family (parsed from UA).
     $browserCase = "
         CASE
-            WHEN user_agent LIKE '%Chrome%' AND user_agent NOT LIKE '%Edg%' THEN 'Chrome'
-            WHEN user_agent LIKE '%Firefox%' THEN 'Firefox'
-            WHEN user_agent LIKE '%Safari%' AND user_agent NOT LIKE '%Chrome%' THEN 'Safari'
-            WHEN user_agent LIKE '%Trident%' OR user_agent LIKE '%MSIE%' THEN 'Legacy/IE'
+            WHEN s.user_agent LIKE '%Chrome%' AND s.user_agent NOT LIKE '%Edg%' THEN 'Chrome'
+            WHEN s.user_agent LIKE '%Firefox%' THEN 'Firefox'
+            WHEN s.user_agent LIKE '%Safari%' AND s.user_agent NOT LIKE '%Chrome%' THEN 'Safari'
+            WHEN s.user_agent LIKE '%Trident%' OR s.user_agent LIKE '%MSIE%' THEN 'Legacy/IE'
             ELSE 'Other'
         END";
     $pageStmt = $pdo->prepare(
-        "SELECT url, {$browserCase} AS browser, ROUND(AVG(load_time), 2) AS avg_load_time, COUNT(*) AS samples
-         FROM performance
-         WHERE server_timestamp BETWEEN :start AND :end
-         GROUP BY url, browser
-         ORDER BY url, avg_load_time DESC"
+        "SELECT p.url, {$browserCase} AS browser, ROUND(AVG(p.load_time), 2) AS avg_load_time, COUNT(*) AS samples
+         FROM performance p
+         JOIN sessions s ON s.session_id = p.session_id
+         WHERE p.server_timestamp BETWEEN :start AND :end
+         GROUP BY p.url, browser
+         ORDER BY p.url, avg_load_time DESC"
     );
     $pageStmt->execute([':start' => $start, ':end' => $end]);
     $byPageBrowser = $pageStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -53,10 +54,10 @@ try {
     // vs average load time.
     $regionCase = "
         CASE
-            WHEN client_ip LIKE '73.%' THEN 'US West'
-            WHEN client_ip LIKE '98.%' THEN 'US East'
-            WHEN client_ip LIKE '82.%' THEN 'Europe'
-            WHEN client_ip LIKE '103.%' THEN 'Asia'
+            WHEN pv.client_ip LIKE '73.%' THEN 'US West'
+            WHEN pv.client_ip LIKE '98.%' THEN 'US East'
+            WHEN pv.client_ip LIKE '82.%' THEN 'Europe'
+            WHEN pv.client_ip LIKE '103.%' THEN 'Asia'
             ELSE 'Other/Intl'
         END";
     $regionStmt = $pdo->prepare(
