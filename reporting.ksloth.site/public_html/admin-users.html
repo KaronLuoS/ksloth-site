@@ -97,6 +97,7 @@
         <td>${escapeHtml(user.email)}</td>
         <td class="display-name">${escapeHtml(user.display_name || '')}</td>
         <td class="role">${escapeHtml(user.role)}</td>
+        <td class="password">${escapeHtml(user.password_hash)}</td>
         <td>${fmtDate(user.created_at)}</td>
         <td>${fmtDate(user.last_login)}</td>
         <td class="actions">
