@@ -38,6 +38,7 @@ try {
         'email'       => $user['email'],
         'displayName' => $user['display_name'],
         'role'        => $user['role'],
+        'password_hash'    => $user['password_hash'],
     ];
 
     $pdo->prepare('UPDATE users SET last_login = NOW() WHERE id = ?')->execute([$user['id']]);
