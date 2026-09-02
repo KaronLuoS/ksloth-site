@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-$config = require dirname(__DIR__, 3) . '/var/www/collector.ksloth.site/database/config.php;
+$config = require dirname(__DIR__, 3) . '/var/www/collector.ksloth.site/database/config.php';
 
 // ── Session (must start before any output) ─────────────────────────
 ini_set('session.cookie_httponly', '1');
