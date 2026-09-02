@@ -63,6 +63,14 @@ canvas { width: 100%; height: 260px; display: block; }
 .legend-item { display: flex; align-items: center; gap: 0.35rem; }
 .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 .chart-note { font-size: 0.8rem; color: #888; margin: -1rem 0 1.5rem; }
+.section-heading { margin: 2rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid #2c3e50; color: #2c3e50; }
+.section-heading:first-child { margin-top: 0; }
+
+/* Admin view */
+.add-user-form { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.add-user-form input, .add-user-form select { flex: 1; min-width: 120px; padding: 0.35rem; }
+.actions button { margin-right: 0.25rem; font-size: 0.8rem; padding: 0.25rem 0.5rem; }
+.actions button.danger, button.danger { color: #c0392b; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; }
 th { color: #666; font-weight: 600; }

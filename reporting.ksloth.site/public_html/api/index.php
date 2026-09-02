@@ -21,25 +21,28 @@ $resource = $segments[0] ?? null;
 $id = $segments[1] ?? null;
 
 if ($resource === null) {
-    http_response_code(404);
-    echo json_encode(['error' => 'No resource specified']);
-    exit;
+    sendErrorResponse(404, 'No resource specified');
 }
 
-// Auth endpoints are always reachable 
+// Auth endpoints are always reachable — you can't require a login to
+// reach the login endpoint.
 $authResources = ['login', 'logout', 'me'];
 if (in_array($resource, $authResources, true)) {
     require __DIR__ . "/routes/{$resource}.php";
     exit;
 }
 
-// Everything past this point is the real security boundary 
+// Everything past this point is the real security boundary — this is
+// what actually blocks unauthenticated access, not any redirect logic
+// on the frontend.
 if (empty($_SESSION['user'])) {
     http_response_code(401);
     echo json_encode(['error' => 'Not authenticated']);
     exit;
 }
 
+// users needs its own handler (password hashing, hiding password_hash,
+// admin-only role check) rather than the generic CRUD allow-list.
 if ($resource === 'users') {
     require __DIR__ . '/routes/users.php';
     exit;
@@ -47,7 +50,7 @@ if ($resource === 'users') {
 
 // "GET with no ID" on these four resource names returns the aggregate
 // report instead of raw rows (see earlier design note).
-$reportResources = ['overview', 'pageviews', 'performance', 'errors', 'sessions'];
+$reportResources = ['overview', 'activity', 'pageviews', 'performance', 'errors', 'sessions', 'bounce-report'];
 
 if (in_array($resource, $reportResources, true) && $id === null) {
     if ($method !== 'GET') {

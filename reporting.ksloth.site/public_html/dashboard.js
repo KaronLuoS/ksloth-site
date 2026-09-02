@@ -2,9 +2,7 @@ const content = document.getElementById('content');
 const sidebar = document.getElementById('sidebar');
 
 // ── Auth ──────────────────────────────────────────────────────────
-// Cookie-session based (not JWT/localStorage, despite what some
-// reference examples show) — matches the login flow already built.
-// GET /api/me returns the current user or 401.
+// Cookie-session based. GET /api/me returns the current user or 401.
 
 async function checkAuth() {
   try {
@@ -84,54 +82,49 @@ function showError(message) {
   content.appendChild(div);
 }
 
-// ── Cards ─────────────────────────────────────────────────────────
+// ── Section heading ─────────────────────────────────────────────
 
-function renderCards(container, data) {
-  const cardsDiv = document.createElement('div');
-  cardsDiv.className = 'summary-cards';
+function renderSectionHeading(container, text) {
+  const h2 = document.createElement('h2');
+  h2.className = 'section-heading';
+  h2.textContent = text;
+  container.appendChild(h2);
+}
 
-  const metrics = [
-    { label: 'Total Pageviews', value: (data.total_pageviews || 0).toLocaleString() },
-    { label: 'Total Sessions',  value: (data.total_sessions || 0).toLocaleString() },
-    { label: 'Avg Load Time',   value: (data.avg_load_time_ms || 0) + ' ms' },
-    { label: 'Total Errors',    value: (data.total_errors || 0).toLocaleString() },
-  ];
+// ── Stat card (single value, e.g. "Total Errors: 142") ───────────
 
-  metrics.forEach((m) => {
-    const card = document.createElement('div');
-    card.className = 'metric-card';
+function renderStatCard(container, label, value) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'summary-cards';
 
-    const label = document.createElement('div');
-    label.className = 'metric-label';
-    label.textContent = m.label;
+  const card = document.createElement('div');
+  card.className = 'metric-card';
+  const l = document.createElement('div');
+  l.className = 'metric-label';
+  l.textContent = label;
+  const v = document.createElement('div');
+  v.className = 'metric-value';
+  v.textContent = value;
+  card.append(l, v);
 
-    const value = document.createElement('div');
-    value.className = 'metric-value';
-    value.textContent = m.value;
-
-    card.appendChild(label);
-    card.appendChild(value);
-    cardsDiv.appendChild(card);
-  });
-
-  container.appendChild(cardsDiv);
+  wrapper.appendChild(card);
+  container.appendChild(wrapper);
 }
 
 // ── Line chart (vanilla canvas) ──────────────────────────────────
-// byDay: [{ day: '2026-08-01', count: 42 }, ...]  (from /api/pageviews)
+// series: [{ day: '2026-08-01', count: 42 }, ...]
 
-function renderLineChart(container, byDay) {
+function renderLineChart(container, title, series) {
   const wrapper = document.createElement('div');
   wrapper.className = 'chart-container';
   const heading = document.createElement('h3');
-  heading.textContent = 'Pageviews Over Time';
+  heading.textContent = title;
   wrapper.appendChild(heading);
 
   const canvas = document.createElement('canvas');
   wrapper.appendChild(canvas);
   container.appendChild(wrapper);
 
-  // Size the canvas to match its rendered CSS size so pixels aren't stretched.
   const cssWidth = canvas.clientWidth || 600;
   const cssHeight = 260;
   canvas.width = cssWidth;
@@ -142,16 +135,15 @@ function renderLineChart(container, byDay) {
   const plotW = cssWidth - padding.left - padding.right;
   const plotH = cssHeight - padding.top - padding.bottom;
 
-  if (!byDay || byDay.length === 0) {
+  if (!series || series.length === 0) {
     ctx.fillStyle = '#888';
     ctx.fillText('No data for this range', padding.left, cssHeight / 2);
     return;
   }
 
-  const values = byDay.map((d) => Number(d.count));
+  const values = series.map((d) => Number(d.count));
   const maxVal = Math.max(...values, 1);
 
-  // Axes
   ctx.strokeStyle = '#ccc';
   ctx.beginPath();
   ctx.moveTo(padding.left, padding.top);
@@ -159,34 +151,31 @@ function renderLineChart(container, byDay) {
   ctx.lineTo(cssWidth - padding.right, cssHeight - padding.bottom);
   ctx.stroke();
 
-  // Line path
   ctx.strokeStyle = '#2c3e50';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  byDay.forEach((point, i) => {
-    const x = padding.left + (byDay.length === 1 ? 0 : (i / (byDay.length - 1)) * plotW);
+  series.forEach((point, i) => {
+    const x = padding.left + (series.length === 1 ? 0 : (i / (series.length - 1)) * plotW);
     const y = cssHeight - padding.bottom - (Number(point.count) / maxVal) * plotH;
     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   });
   ctx.stroke();
 
-  // Y-axis labels: max and zero
   ctx.fillStyle = '#666';
   ctx.font = '11px sans-serif';
   ctx.fillText(String(maxVal), 4, padding.top + 4);
   ctx.fillText('0', 4, cssHeight - padding.bottom);
 
-  // X-axis labels: first, middle, last date
-  const labelIdx = [0, Math.floor((byDay.length - 1) / 2), byDay.length - 1];
+  const labelIdx = [0, Math.floor((series.length - 1) / 2), series.length - 1];
   [...new Set(labelIdx)].forEach((i) => {
-    const x = padding.left + (byDay.length === 1 ? 0 : (i / (byDay.length - 1)) * plotW);
-    ctx.fillText(byDay[i].day, Math.max(padding.left, x - 25), cssHeight - 8);
+    const x = padding.left + (series.length === 1 ? 0 : (i / (series.length - 1)) * plotW);
+    ctx.fillText(series[i].day, Math.max(padding.left, x - 25), cssHeight - 8);
   });
 }
 
 // ── Grouped bar chart (vanilla canvas) ───────────────────────────
 // categories: ['/checkout', '/products/42', ...]
-// series: [{ name: 'Avg Load Time', values: [...] }, { name: 'Avg TTFB', values: [...] }]
+// series: [{ name: 'Avg Load Time', values: [...] }, ...] (1+ series)
 
 function renderBarChart(container, title, categories, series, unit) {
   const wrapper = document.createElement('div');
@@ -198,22 +187,22 @@ function renderBarChart(container, title, categories, series, unit) {
   const canvas = document.createElement('canvas');
   wrapper.appendChild(canvas);
 
-  // Legend
-  const legend = document.createElement('div');
-  legend.className = 'chart-legend';
-  const colors = ['#2c3e50', '#e67e22'];
-  series.forEach((s, i) => {
-    const item = document.createElement('span');
-    item.className = 'legend-item';
-    item.innerHTML = ''; // build with DOM, not innerHTML, even for our own static markup
-    const swatch = document.createElement('span');
-    swatch.className = 'legend-swatch';
-    swatch.style.background = colors[i % colors.length];
-    item.appendChild(swatch);
-    item.appendChild(document.createTextNode(s.name));
-    legend.appendChild(item);
-  });
-  wrapper.appendChild(legend);
+  const colors = ['#2c3e50', '#e67e22', '#27ae60', '#8e44ad'];
+  if (series.length > 1) {
+    const legend = document.createElement('div');
+    legend.className = 'chart-legend';
+    series.forEach((s, i) => {
+      const item = document.createElement('span');
+      item.className = 'legend-item';
+      const swatch = document.createElement('span');
+      swatch.className = 'legend-swatch';
+      swatch.style.background = colors[i % colors.length];
+      item.appendChild(swatch);
+      item.appendChild(document.createTextNode(s.name));
+      legend.appendChild(item);
+    });
+    wrapper.appendChild(legend);
+  }
   container.appendChild(wrapper);
 
   if (!categories || categories.length === 0) {
@@ -236,7 +225,6 @@ function renderBarChart(container, title, categories, series, unit) {
   const allValues = series.flatMap((s) => s.values.map((v) => Number(v) || 0));
   const maxVal = Math.max(...allValues, 1);
 
-  // Axes
   ctx.strokeStyle = '#ccc';
   ctx.beginPath();
   ctx.moveTo(padding.left, padding.top);
@@ -244,11 +232,9 @@ function renderBarChart(container, title, categories, series, unit) {
   ctx.lineTo(cssWidth - padding.right, cssHeight - padding.bottom);
   ctx.stroke();
 
-  // Bars: each category gets a group, each series gets a bar within the group
   const groupWidth = plotW / categories.length;
   const barPadding = groupWidth * 0.15;
-  const barsInGroup = series.length;
-  const barWidth = (groupWidth - barPadding * 2) / barsInGroup;
+  const barWidth = (groupWidth - barPadding * 2) / series.length;
 
   categories.forEach((cat, i) => {
     const groupX = padding.left + i * groupWidth;
@@ -258,12 +244,10 @@ function renderBarChart(container, title, categories, series, unit) {
       const barH = (val / maxVal) * plotH;
       const x = groupX + barPadding + si * barWidth;
       const y = cssHeight - padding.bottom - barH;
-
       ctx.fillStyle = colors[si % colors.length];
       ctx.fillRect(x, y, barWidth - 2, barH);
     });
 
-    // X-axis label — truncate long URLs so they don't overlap
     ctx.fillStyle = '#666';
     ctx.font = '10px sans-serif';
     ctx.save();
@@ -271,13 +255,12 @@ function renderBarChart(container, title, categories, series, unit) {
     const labelY = cssHeight - padding.bottom + 14;
     ctx.translate(labelX, labelY);
     ctx.rotate(-Math.PI / 6);
-    const label = cat.length > 20 ? cat.slice(0, 18) + '…' : cat;
+    const label = String(cat).length > 20 ? String(cat).slice(0, 18) + '…' : String(cat);
     ctx.textAlign = 'right';
     ctx.fillText(label, 0, 0);
     ctx.restore();
   });
 
-  // Y-axis labels: max and zero
   ctx.fillStyle = '#666';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'right';
@@ -286,38 +269,37 @@ function renderBarChart(container, title, categories, series, unit) {
   ctx.textAlign = 'left';
 }
 
+// ── Generic grid/table ────────────────────────────────────────────
+// columns: [{ label: 'URL', key: 'url', format: v => v }]
+// rows: array of objects
 
-
-function renderTable(container, pages) {
+function renderGenericTable(container, title, columns, rows) {
   const wrapper = document.createElement('div');
   wrapper.className = 'table-wrapper';
   const heading = document.createElement('h3');
-  heading.textContent = 'Top Pages';
+  heading.textContent = title;
   wrapper.appendChild(heading);
 
   const table = document.createElement('table');
   const thead = document.createElement('thead');
   const headRow = document.createElement('tr');
-  ['URL', 'Views'].forEach((label) => {
+  columns.forEach((col) => {
     const th = document.createElement('th');
-    th.textContent = label;
+    th.textContent = col.label;
     headRow.appendChild(th);
   });
   thead.appendChild(headRow);
   table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
-  (pages || []).forEach((p) => {
+  (rows || []).forEach((row) => {
     const tr = document.createElement('tr');
-
-    const tdUrl = document.createElement('td');
-    tdUrl.textContent = p.url; // textContent — never innerHTML with API data
-
-    const tdViews = document.createElement('td');
-    tdViews.textContent = Number(p.views).toLocaleString();
-
-    tr.appendChild(tdUrl);
-    tr.appendChild(tdViews);
+    columns.forEach((col) => {
+      const td = document.createElement('td');
+      const raw = row[col.key];
+      td.textContent = col.format ? col.format(raw, row) : raw; // textContent — never innerHTML with API data
+      tr.appendChild(td);
+    });
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
@@ -325,125 +307,367 @@ function renderTable(container, pages) {
   container.appendChild(wrapper);
 }
 
-// ── Error frequency grid ──────────────────────────────────────────
+// ── Dashboard view (Activity + Errors + Performance, one page) ───
 
-function renderErrorTable(container, frequency) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'table-wrapper';
-  const heading = document.createElement('h3');
-  heading.textContent = 'Most Frequent Errors';
-  wrapper.appendChild(heading);
-
-  const table = document.createElement('table');
-  const thead = document.createElement('thead');
-  const headRow = document.createElement('tr');
-  ['Error Message', 'Occurrences', 'Last Seen'].forEach((label) => {
-    const th = document.createElement('th');
-    th.textContent = label;
-    headRow.appendChild(th);
-  });
-  thead.appendChild(headRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement('tbody');
-  (frequency || []).forEach((e) => {
-    const tr = document.createElement('tr');
-
-    const tdMsg = document.createElement('td');
-    tdMsg.textContent = e.error_message || '(no message)';
-
-    const tdCount = document.createElement('td');
-    tdCount.textContent = Number(e.occurrences).toLocaleString();
-
-    const tdSeen = document.createElement('td');
-    tdSeen.textContent = e.last_seen ? new Date(e.last_seen).toLocaleString() : '—';
-
-    tr.appendChild(tdMsg);
-    tr.appendChild(tdCount);
-    tr.appendChild(tdSeen);
-    tbody.appendChild(tr);
-  });
-  table.appendChild(tbody);
-  wrapper.appendChild(table);
-  container.appendChild(wrapper);
-}
-
-// ── Views ─────────────────────────────────────────────────────────
-
-async function overviewView() {
+async function dashboardView() {
   showLoading();
   try {
-    const [overview, pageviews] = await Promise.all([
-      apiFetch('/api/overview'),
-      apiFetch('/api/pageviews'),
+    const [activity, errors, performance] = await Promise.all([
+      apiFetch('/api/activity'),
+      apiFetch('/api/errors'),
+      apiFetch('/api/performance'),
     ]);
-    if (!overview || !pageviews) return; // already redirected on 401
+    if (!activity || !errors || !performance) return; // already redirected on 401
 
     content.innerHTML = '';
-    renderCards(content, overview);
-    renderLineChart(content, pageviews.byDay);
-    renderTable(content, pageviews.topPages);
+
+    // ── Activity ──
+    renderSectionHeading(content, 'Activity');
+    renderBarChart(
+      content, 'Views per Page',
+      activity.topPages.map((p) => p.url),
+      [{ name: 'Views', values: activity.topPages.map((p) => p.views) }]
+    );
+    renderBarChart(
+      content, 'Referrer Breakdown',
+      activity.referrers.map((r) => r.referrer),
+      [{ name: 'Sessions', values: activity.referrers.map((r) => r.sessions) }]
+    );
+    renderStatCard(content, 'JS-Allowed %', activity.jsAllowedPct + '%');
+
+    // ── Errors ──
+    renderSectionHeading(content, 'Errors');
+    renderStatCard(content, 'Total Errors', errors.total.toLocaleString());
+    renderBarChart(
+      content, 'Error Type Breakdown',
+      errors.byType.map((t) => t.error_type),
+      [{ name: 'Count', values: errors.byType.map((t) => t.count) }]
+    );
+    const histLabels = ['0', '1', '2', '3+'];
+    renderBarChart(
+      content, 'Errors per Session',
+      histLabels,
+      [{ name: 'Sessions', values: histLabels.map((k) => errors.perSessionHistogram[k] || 0) }]
+    );
+    renderLineChart(content, 'Errors Over Time', errors.trend);
+
+    // ── Performance ──
+    renderSectionHeading(content, 'Performance');
+    const pages = performance.pages || [];
+    const pageUrls = pages.map((p) => p.url);
+    renderBarChart(content, 'Average Load Time by Page', pageUrls,
+      [{ name: 'Avg Load Time (ms)', values: pages.map((p) => p.avg_load_time) }], 'ms');
+    renderBarChart(content, 'TTFB by Page', pageUrls,
+      [{ name: 'Avg TTFB (ms)', values: pages.map((p) => p.avg_ttfb) }], 'ms');
+    renderBarChart(content, 'DOM Complete Time by Page', pageUrls,
+      [{ name: 'Avg DOM Complete (ms)', values: pages.map((p) => p.avg_dom_complete) }], 'ms');
   } catch (err) {
     showError(err.message);
   }
 }
 
-async function performanceView() {
+// ── Performance Report view ───────────────────────────────────────
+
+async function reportView() {
   showLoading();
   try {
-    const perf = await apiFetch('/api/performance');
-    if (!perf) return;
+    const report = await apiFetch('/api/bounce-report');
+    if (!report) return;
 
     content.innerHTML = '';
 
-    if (!perf.pages || perf.pages.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'loading';
-      empty.textContent = 'No performance data for this range.';
-      content.appendChild(empty);
+    renderSectionHeading(content, 'Does Load Time Affect Bounce Rate?');
+
+    const buckets = report.loadTimeBuckets || [];
+    renderBarChart(
+      content, 'Bounce Rate by Load Time Bucket',
+      buckets.map((b) => b.bucket),
+      [{ name: 'Bounce Rate (%)', values: buckets.map((b) => b.bounce_rate_pct) }], '%'
+    );
+    const bucketNote = document.createElement('p');
+    bucketNote.className = 'chart-note';
+    bucketNote.textContent = `Sessions per bucket: ${buckets.map((b) => `${b.bucket}: ${b.sessions}`).join(', ')}`;
+    content.appendChild(bucketNote);
+
+    // Load time by page x browser — pivot the flat rows into series per browser.
+    const byPageBrowser = report.byPageBrowser || [];
+    const pageUrls = [...new Set(byPageBrowser.map((r) => r.url))];
+    const browsers = [...new Set(byPageBrowser.map((r) => r.browser))];
+    const browserSeries = browsers.map((browser) => ({
+      name: browser,
+      values: pageUrls.map((url) => {
+        const match = byPageBrowser.find((r) => r.url === url && r.browser === browser);
+        return match ? match.avg_load_time : 0;
+      }),
+    }));
+    renderBarChart(content, 'Load Time by Page and Browser', pageUrls, browserSeries, 'ms');
+
+    renderGenericTable(
+      content, 'Average Load Time by Region',
+      [
+        { label: 'Region', key: 'region' },
+        { label: 'Avg Load Time (ms)', key: 'avg_load_time' },
+        { label: 'Sessions', key: 'sessions' },
+      ],
+      report.ipRegions
+    );
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+// ── Admin view (unchanged from before) ────────────────────────────
+
+function fmtDate(str) {
+  return str ? new Date(str).toLocaleString() : '—';
+}
+
+async function adminView() {
+  showLoading();
+  try {
+    const res = await fetch('/api/users', { credentials: 'include' });
+    if (res.status === 401) {
+      window.location.href = '/login.html';
       return;
     }
+    if (res.status === 403) {
+      content.innerHTML = '';
+      const denied = document.createElement('div');
+      denied.className = 'error-message';
+      denied.textContent = 'Access denied — admin or owner role required.';
+      content.appendChild(denied);
+      return;
+    }
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-    const categories = perf.pages.map((p) => p.url);
-    const series = [
-      { name: 'Avg Load Time (ms)', values: perf.pages.map((p) => p.avg_load_time) },
-      { name: 'Avg TTFB (ms)',      values: perf.pages.map((p) => p.avg_ttfb) },
-    ];
-    renderBarChart(content, 'Load Time vs. TTFB by Page (slowest first)', categories, series, 'ms');
-
-    // Sample counts as a confidence note — an average from 2 samples
-    // means something very different than one from 500.
-    const note = document.createElement('p');
-    note.className = 'chart-note';
-    const min = Math.min(...perf.pages.map((p) => p.samples));
-    const max = Math.max(...perf.pages.map((p) => p.samples));
-    note.textContent = `Based on ${min === max ? min : `${min}–${max}`} sample(s) per page in this range.`;
-    content.appendChild(note);
-  } catch (err) {
-    showError(err.message);
-  }
-}
-
-async function errorsView() {
-  showLoading();
-  try {
-    const errors = await apiFetch('/api/errors');
-    if (!errors) return;
-
+    const users = await res.json();
     content.innerHTML = '';
-    renderLineChart(content, errors.trend);
-    renderErrorTable(content, errors.frequency);
+    renderUsersTable(content, users);
+    renderAddUserForm(content);
   } catch (err) {
     showError(err.message);
   }
 }
 
-function placeholderView(name) {
-  content.innerHTML = '';
-  const p = document.createElement('div');
-  p.className = 'loading';
-  p.textContent = `${name} — coming in the next module.`;
-  content.appendChild(p);
+function renderUsersTable(container, users) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'table-wrapper';
+  const heading = document.createElement('h3');
+  heading.textContent = 'Manage Users';
+  wrapper.appendChild(heading);
+
+  const table = document.createElement('table');
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  ['Email', 'Display Name', 'Role', 'Created', 'Last Login', 'Actions'].forEach((label) => {
+    const th = document.createElement('th');
+    th.textContent = label;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  users.forEach((user) => tbody.appendChild(buildUserRow(user)));
+  table.appendChild(tbody);
+
+  wrapper.appendChild(table);
+  container.appendChild(wrapper);
+}
+
+function buildUserRow(user) {
+  const tr = document.createElement('tr');
+  tr.dataset.id = user.id;
+
+  const tdEmail = document.createElement('td');
+  tdEmail.textContent = user.email;
+
+  const tdName = document.createElement('td');
+  tdName.className = 'display-name';
+  tdName.textContent = user.display_name || '';
+
+  const tdRole = document.createElement('td');
+  tdRole.className = 'role';
+  tdRole.textContent = user.role;
+
+  const tdCreated = document.createElement('td');
+  tdCreated.textContent = fmtDate(user.created_at);
+
+  const tdLogin = document.createElement('td');
+  tdLogin.textContent = fmtDate(user.last_login);
+
+  const tdActions = document.createElement('td');
+  tdActions.className = 'actions';
+
+  const editBtn = document.createElement('button');
+  editBtn.textContent = 'Edit';
+  editBtn.addEventListener('click', () => enterEditMode(tr, user));
+
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = 'Reset Password';
+  resetBtn.addEventListener('click', () => resetPassword(user.id));
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = 'Delete';
+  deleteBtn.className = 'danger';
+  deleteBtn.addEventListener('click', () => deleteUserRow(user.id, tr));
+
+  tdActions.append(editBtn, resetBtn, deleteBtn);
+  tr.append(tdEmail, tdName, tdRole, tdCreated, tdLogin, tdActions);
+
+  return tr;
+}
+
+function enterEditMode(tr, user) {
+  const nameCell = tr.querySelector('.display-name');
+  const roleCell = tr.querySelector('.role');
+  const actionsCell = tr.querySelector('.actions');
+
+  nameCell.innerHTML = '';
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.value = user.display_name || '';
+  nameCell.appendChild(nameInput);
+
+  roleCell.innerHTML = '';
+  const roleSelect = document.createElement('select');
+  ['viewer', 'admin', 'owner'].forEach((r) => {
+    const opt = document.createElement('option');
+    opt.value = r;
+    opt.textContent = r;
+    opt.selected = r === user.role;
+    roleSelect.appendChild(opt);
+  });
+  roleCell.appendChild(roleSelect);
+
+  actionsCell.innerHTML = '';
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Save';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+
+  saveBtn.addEventListener('click', async () => {
+    const res = await fetch(`/api/users/${user.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ displayName: nameInput.value, role: roleSelect.value }),
+    });
+    if (res.ok) {
+      route();
+    } else {
+      const data = await res.json();
+      alert(data.error || 'Failed to update user');
+    }
+  });
+  cancelBtn.addEventListener('click', () => route());
+
+  actionsCell.append(saveBtn, cancelBtn);
+}
+
+async function resetPassword(id) {
+  const newPassword = prompt('Enter a new password (min 8 characters):');
+  if (!newPassword) return;
+  if (newPassword.length < 8) {
+    alert('Password must be at least 8 characters.');
+    return;
+  }
+
+  const res = await fetch(`/api/users/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ password: newPassword }),
+  });
+  if (res.ok) {
+    alert('Password updated.');
+  } else {
+    const data = await res.json();
+    alert(data.error || 'Failed to update password');
+  }
+}
+
+async function deleteUserRow(id, tr) {
+  if (!confirm('Delete this user? This cannot be undone.')) return;
+
+  const res = await fetch(`/api/users/${id}`, { method: 'DELETE', credentials: 'include' });
+  if (res.ok) {
+    tr.remove();
+  } else {
+    const data = await res.json();
+    alert(data.error || 'Failed to delete user');
+  }
+}
+
+function renderAddUserForm(container) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'table-wrapper';
+  const heading = document.createElement('h3');
+  heading.textContent = 'Add New User';
+  wrapper.appendChild(heading);
+
+  const form = document.createElement('form');
+  form.className = 'add-user-form';
+
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.placeholder = 'Email';
+  emailInput.required = true;
+
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'password';
+  passwordInput.placeholder = 'Password (min 8 chars)';
+  passwordInput.required = true;
+  passwordInput.minLength = 8;
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.placeholder = 'Display name';
+
+  const roleSelect = document.createElement('select');
+  ['viewer', 'admin', 'owner'].forEach((r) => {
+    const opt = document.createElement('option');
+    opt.value = r;
+    opt.textContent = r;
+    roleSelect.appendChild(opt);
+  });
+
+  const submitBtn = document.createElement('button');
+  submitBtn.type = 'submit';
+  submitBtn.textContent = 'Add User';
+
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'error-message';
+  errorDiv.style.padding = '0.5rem 0';
+
+  form.append(emailInput, passwordInput, nameInput, roleSelect, submitBtn);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.textContent = '';
+
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        email: emailInput.value,
+        password: passwordInput.value,
+        displayName: nameInput.value,
+        role: roleSelect.value,
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      route();
+    } else {
+      errorDiv.textContent = data.error || 'Failed to add user';
+    }
+  });
+
+  wrapper.append(form, errorDiv);
+  container.appendChild(wrapper);
 }
 
 // ── Router ────────────────────────────────────────────────────────
@@ -451,7 +675,7 @@ function placeholderView(name) {
 let currentUser = null;
 
 function updateActiveNav() {
-  const hash = window.location.hash || '#/overview';
+  const hash = window.location.hash || '#/dashboard';
   document.querySelectorAll('.dashboard-sidebar a').forEach((a) => {
     a.classList.toggle('active', a.getAttribute('href') === hash.split('?')[0]);
   });
@@ -459,28 +683,25 @@ function updateActiveNav() {
 
 function route() {
   updateActiveNav();
-  const hash = (window.location.hash || '#/overview').split('?')[0];
+  const hash = (window.location.hash || '#/dashboard').split('?')[0];
 
   switch (hash) {
-    case '#/overview':
-      overviewView();
+    case '#/dashboard':
+      dashboardView();
       break;
-    case '#/performance':
-      performanceView();
+    case '#/report':
+      reportView();
       break;
-    case '#/errors':
-      errorsView();
-      break;
-    case './admin-users.html':
-      // Role check — UX only. The API enforces this for real.
+    case '#/admin':
+      // Role check — UX only. The API enforces this for real (403 handled inside adminView).
       if (currentUser && currentUser.role !== 'owner' && currentUser.role !== 'admin') {
-        window.location.hash = '#/overview';
+        window.location.hash = '#/dashboard';
         return;
       }
-      placeholderView('Admin Panel');
+      adminView();
       break;
     default:
-      window.location.hash = '#/overview';
+      window.location.hash = '#/dashboard';
   }
 }
 
@@ -488,7 +709,7 @@ function route() {
 
 async function init() {
   currentUser = await checkAuth();
-  if (!currentUser) return; // checkAuth already redirected
+  if (!currentUser) return;
 
   document.getElementById('user-name').textContent = currentUser.displayName || currentUser.email;
 

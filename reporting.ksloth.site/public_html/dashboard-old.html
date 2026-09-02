@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analytics Dashboard</title>
-  <link rel="stylesheet" href="/dashboard.css">
+  <link rel="stylesheet" href="./dashboard.css">
 </head>
 <body>
   <div class="dashboard-shell">
     <header class="dashboard-header">
       <button id="hamburger" class="hamburger" aria-label="Toggle menu">&#9776;</button>
-      <a href="#/dashboard" class="logo">Analytics Dashboard</a>
+      <a href="#/overview" class="logo">Analytics Dashboard</a>
       <div class="date-range">
         <label>From <input type="date" id="date-start"></label>
         <label>To <input type="date" id="date-end"></label>
@@ -22,8 +22,9 @@
     </header>
 
     <nav class="dashboard-sidebar" id="sidebar">
-      <a href="#/dashboard">Dashboard</a>
-      <a href="#/report">Performance Report</a>
+      <a href="#/overview">Overview</a>
+      <a href="#/performance">Performance</a>
+      <a href="#/errors">Errors</a>
       <a href="./admin-users.html" id="admin-link">Admin</a>
     </nav>
 
