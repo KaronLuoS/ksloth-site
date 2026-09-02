@@ -32,8 +32,8 @@ $resourceMap = [
     ],
     'sessions' => [
         'table'   => 'sessions',
-        'pk'      => 'id', // surrogate id, after the gap-based sessionization migration
-        'columns' => ['session_id', 'first_page', 'last_page', 'page_count', 'start_time',
+        'pk'      => 'session_id', // surrogate id, after the gap-based sessionization migration
+        'columns' => ['first_page', 'last_page', 'page_count', 'start_time',
                       'last_activity', 'duration_seconds', 'referrer', 'user_agent'],
     ],
 ];
