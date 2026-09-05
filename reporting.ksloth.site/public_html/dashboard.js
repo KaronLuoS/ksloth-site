@@ -430,8 +430,7 @@ async function reportView() {
       <p>Bounce rate rises from roughly 33.9% in the
       &lt;1s bucket to 53% in the 3s+ bucket, with a peak of 75% in the 2-3s bucket — sessions with slower average load times are meaningfully more likely to leave after a single page, however, people seems to be willing to wait longer with sunken cost</p>
       <p>The main page (index.html) on legacy browsers is the slowest page/browser combination, averaging 1768.5ms.</p>
-      <p>Europe averages 1354.86ms vs. 	1180.98ms for
-      US West</p>
+      <p>Europe averages 1354.86ms vs. 	1180.98ms for US West</p>
       <p>Recommended actions:</p>
       <ul>
         <li>Prioritize performance work on index.html, since it is both slow and high-traffic.</li>
@@ -443,7 +442,7 @@ async function reportView() {
   }
 }
 
-// ── Admin view (unchanged from before) ────────────────────────────
+// ── Admin view ────────────────────────────
 
 function fmtDate(str) {
   return str ? new Date(str).toLocaleString() : '—';
