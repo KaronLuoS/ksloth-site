@@ -427,25 +427,15 @@ async function reportView() {
     );
 
     renderAnalysisSection(content, 'Key Findings & Recommendations', `
-      <p>Finding:Bounce rate rises from roughly X% in the
-      &lt;1s bucket to Y% in the 3s+ bucket — sessions with slower average
-      load times are meaningfully more likely to leave after a single page.</p>
-      <p><strong>Finding:</strong> [Page] on [Browser] is the slowest
-      page/browser combination, averaging Xms — cross-reference against the
-      Dashboard's "Views per Page" chart to see whether this is also a
-      high-traffic page (worth fixing first) or a low-traffic one (lower
-      priority).</p>
-      <p><strong>Finding:</strong> [Region] averages Xms vs. Yms for
-      [fastest region] — check whether this region represents a meaningful
-      share of total sessions before treating it as a priority.</p>
-      <p><strong>Recommended actions:</strong></p>
+      <p>Bounce rate rises from roughly 33.9% in the
+      &lt;1s bucket to 53% in the 3s+ bucket, with a peak of 75% in the 2-3s bucket — sessions with slower average load times are meaningfully more likely to leave after a single page, however, people seems to be willing to wait longer with sunken cost</p>
+      <p>The main page (index.html) on legacy browsers is the slowest page/browser combination, averaging 1768.5ms.</p>
+      <p>Europe averages 1354.86ms vs. 	1180.98ms for
+      US West</p>
+      <p>Recommended actions:</p>
       <ul>
-        <li>Prioritize performance work on [specific page], since it is both
-        slow and high-traffic.</li>
-        <li>[If regional gap is large and traffic share is meaningful]
-        Consider a CDN or edge caching to address network-distance latency,
-        since this gap is geographic rather than app-side.</li>
-        <li>[Any other action specific to your actual numbers]</li>
+        <li>Prioritize performance work on index.html, since it is both slow and high-traffic.</li>
+        <li>Make sure to make performance better for legacy browsers, as we still see some views from them and the load time is very high compared to other browsers.</li>
       </ul>
     `);
   } catch (err) {
